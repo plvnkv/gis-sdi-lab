@@ -5,3 +5,4 @@ resources:
   - network.yaml
   - storage.yaml
   - data.yaml
+  - martin.yaml

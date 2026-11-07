@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: martin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: martin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: martin
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: martin
+          image: ghcr.io/maplibre/martin:1.16.1@sha256:59902019bf9038926ff0c71174237d6852e64c457830a6349abe7090be8818ca
+          args: [--config, /etc/martin/martin.yaml]
+          env:
+            - name: MARTIN_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: martin-reader
+                  key: database-url
+          ports:
+            - name: tiles
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: tiles
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/martin
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: martin-config

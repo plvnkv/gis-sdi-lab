@@ -1,0 +1,15 @@
+listen_addresses: 0.0.0.0:3000
+worker_processes: 2
+web_ui: disable
+cache:
+  size_mb: 32
+postgres:
+  connection_string: ${MARTIN_DATABASE_URL}
+  pool_size: 4
+  auto_publish: false
+  tables:
+    pilot-points:
+      schema: martin_pilot
+      table: points
+      srid: 4326
+      geometry_column: geom

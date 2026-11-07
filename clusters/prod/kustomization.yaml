@@ -4,3 +4,4 @@ resources:
   - projects.yaml
   - network.yaml
   - storage.yaml
+  - data.yaml

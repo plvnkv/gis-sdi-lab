@@ -12,3 +12,14 @@
 ```bash
 bash tests/bootstrap/test-deploy.sh
 ```
+
+## GitOps-перевірки
+
+Для локального рендерингу потрібні kubectl і Ruby. GitHub Actions запускає ці перевірки для pull request і push до main.
+
+```bash
+bash tests/gitops/test-policy.sh
+bash tests/gitops/validate.sh clusters/prod
+```
+
+Початкова Application Argo CD керує проєктом GIS. Інструкція встановлення є в [runbook](docs/runbooks/bootstrap.md).

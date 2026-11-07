@@ -17,3 +17,16 @@ sudo bash bootstrap/k3s/install.sh --config bootstrap/k3s/config.yaml \
 Після запуску покласти оригінальний k3s server token у незалежне сховище секретів. Його потребує відновлення etcd.
 
 [MAAS CLI](https://canonical.com/maas/docs/stable/how-to-guides/manage-machines/), [конфігурація k3s](https://docs.k3s.io/installation/configuration)
+
+## Початковий Argo CD
+
+Перевірити поточний контекст kubectl. Підготувати install.yaml затвердженого релізу Argo CD та його перевірений SHA-256. Запустити з адміністративним доступом до кластера після появи маніфестів у гілці main.
+
+```bash
+ARGOCD_INSTALL_MANIFEST=/path/to/install.yaml ARGOCD_INSTALL_SHA256="$ARGOCD_SHA256" \
+  bash bootstrap/argocd/install.sh --root clusters/prod/bootstrap/root.yaml
+kubectl -n argocd get application gis-root
+kubectl -n argocd get appproject gis
+```
+
+Root Application керує деклараціями в clusters/prod. Сам root і його bootstrap AppProject застосовуються окремо. Публічне джерело читається без Git-ключа. Перед додаванням сервісів із секретами налаштувати захищене джерело майданчика.

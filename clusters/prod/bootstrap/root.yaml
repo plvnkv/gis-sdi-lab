@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gis-root
+  namespace: argocd
+spec:
+  project: gis-bootstrap
+  source:
+    repoURL: https://github.com/plvnkv/gis-sdi-lab.git
+    targetRevision: main
+    path: clusters/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

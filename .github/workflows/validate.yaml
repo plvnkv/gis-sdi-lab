@@ -1,0 +1,22 @@
+name: Validate infrastructure
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate bootstrap
+        run: |
+          bash tests/bootstrap/test-deploy.sh
+          bash tests/bootstrap/test-k3s-install.sh
+      - name: Validate GitOps manifests
+        run: |
+          bash tests/gitops/test-policy.sh
+          bash tests/gitops/validate.sh clusters/prod

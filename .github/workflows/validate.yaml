@@ -19,4 +19,5 @@ jobs:
       - name: Validate GitOps manifests
         run: |
           bash tests/gitops/test-policy.sh
+          bash tests/gitops/test-network.sh
           bash tests/gitops/validate.sh clusters/prod

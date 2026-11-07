@@ -30,3 +30,11 @@ kubectl -n argocd get appproject gis
 ```
 
 Root Application керує деклараціями в clusters/prod. Сам root і його bootstrap AppProject застосовуються окремо. Публічне джерело читається без Git-ключа. Перед додаванням сервісів із секретами налаштувати захищене джерело майданчика.
+
+## Мережева основа GIS
+
+Після синхронізації root дочірня Application `gis-network` створює namespace `gis` та політики вхідного трафіку. Pod-и в `gis` можуть спілкуватися між собою. Для доступу через штатний Traefik k3s шаблон Pod має містити label `gis-sdi-lab/ingress: enabled` і оголошувати TCP container port з іменем `gis-http`. Service для маршруту має вказувати цей порт у `targetPort`.
+
+Перед підключенням першого сервісу перевірити, що контролер NetworkPolicy увімкнений, а Pod-и Traefik у `kube-system` мають label `app.kubernetes.io/name=traefik`. На тестовому кластері перевірити з'єднання з іншого Pod у `gis`, відмову з іншого namespace та маршрут Traefik до позначеного Pod. DNS, TLS, firewall для доступу з мережі майданчика та egress-політики налаштовуються окремо.
+
+[Мережеві сервіси k3s](https://docs.k3s.io/networking/networking-services), [Kubernetes NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)

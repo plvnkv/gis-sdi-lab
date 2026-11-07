@@ -4,7 +4,7 @@
 
 **Goal:** Відтворювано розгорнути та відновити GIS/SDI на одному фізичному GIS-вузлі.
 
-**Architecture:** Окремий MAAS region+rack провіжинить Ubuntu LTS. Bootstrap запускає однонодовий k3s та Argo CD, який синхронізує приватний GitHub-репозиторій. Критичні копії зберігаються на окремому NAS.
+**Architecture:** Окремий MAAS region+rack провіжинить Ubuntu LTS. Bootstrap запускає однонодовий k3s та Argo CD, який синхронізує публічний GitHub-репозиторій. Критичні копії зберігаються на окремому NAS.
 
 **Tech Stack:** MAAS, cloud-init, k3s, Argo CD, GitHub Actions, Helm, Kustomize, SOPS/age, PostGIS, RustFS, GeoNode, GeoServer, Martin, TiTiler, Prometheus, Grafana, Alertmanager, Loki, Alloy.
 
@@ -44,7 +44,7 @@
 
 **Інтерфейс:** профіль містить CPU/RAM, диски та серійні номери, BMC/PXE, VLAN/DHCP, DNS/TLS, протокол і можливості NAS, обсяг та ріст даних, RPO/RTO і час заміни GIS-вузла. Матриця фіксує точні версії та джерела k3s, Argo, charts і images. PostGIS/GeoNode/GeoServer/Martin затверджуються як сумісний набір.
 
-- [ ] Ініціалізувати Git і створити приватний репозиторій GitHub після отримання назви організації та доступу. Додати правила PR і CODEOWNERS для bootstrap, clusters, platform та workflows. Потрібен принаймні один доступний рев’юер окрім автора PR.
+- [ ] Ініціалізувати Git і підключити публічний репозиторій plvnkv/gis-sdi-lab. Додати правила PR і CODEOWNERS для bootstrap, clusters, platform та workflows. Потрібен принаймні один доступний рев’юер окрім автора PR.
 - [ ] Заповнити профіль реальними параметрами. Позначити невідомі значення як блокери відповідних робіт. Значення стенда можна застосувати лише в локальних перевірках.
 - [ ] Підтвердити версії за upstream і smoke-тестами обраних образів. Зафіксувати точні версії й digests до першого релізу. Визначити сумісний брокер GeoNode, режим RustFS, оператор або спосіб керування PostgreSQL і механізм NAS backup.
 - [ ] Перевірити `git status --short`, `git check-ignore -q .env` і правила GitHub. Очікування — локальні секрети ігноруються, прямий запис до main обмежений, правила вимагають PR-перевірку після підключення CI. Коміт `docs: define GIS site and release baseline`.
@@ -63,10 +63,10 @@
 
 **Файли:** `bootstrap/argocd/install.sh`, `clusters/prod/root.yaml`, `clusters/prod/kustomization.yaml`, `clusters/prod/projects.yaml`, `platform/ingress/`, `platform/storage/`, `platform/secrets/`, `.github/workflows/validate.yaml`, `tests/gitops/validate.sh`.
 
-**Інтерфейси:** `bootstrap/argocd/install.sh --root clusters/prod/root.yaml` встановлює Argo, інтеграцію SOPS/age та root Application з попередньо внесеними credentials. `bash tests/gitops/validate.sh clusters/prod` рендерить кожне джерело як Argo, перевіряє схеми з CRD, зафіксовані джерела та політику для критичних PVC.
+**Інтерфейси:** `bootstrap/argocd/install.sh --root clusters/prod/root.yaml` встановлює Argo, інтеграцію SOPS/age та root Application із публічним URL та окремим захищеним джерелом конфігурації майданчика й секретів. `bash tests/gitops/validate.sh clusters/prod` рендерить кожне джерело як Argo, перевіряє схеми з CRD, зафіксовані джерела та політику для критичних PVC.
 
 - [ ] Додати негативні фікстури для plaintext Secret, образу з `latest`, неправильного namespace/AppProject і критичного PVC з дозволеним prune. Запустити validate до реалізації, потім вимагати відхилення кожної фікстури.
-- [ ] Додати root і AppProjects з обмеженими джерелами та призначеннями, єдиного власника ресурсів Argo, черговість CRD/контролерів, доступ на читання до GitHub, SOPS CMP і окремий шлях введення age-ключа. Додати TLS через ingress, мережеві політики, локальні PV з Retain і захист критичних PVC. У CI закріпити інструменти та actions, додати secret scanning і зробити validate обов’язковим check.
+- [ ] Додати root і AppProjects з обмеженими джерелами та призначеннями, єдиного власника ресурсів Argo, черговість CRD/контролерів, читання публічного GitHub URL без credentials, SOPS CMP і окремий шлях введення age-ключа. Додати TLS через ingress, мережеві політики, локальні PV з Retain і захист критичних PVC. У CI закріпити інструменти та actions, додати secret scanning і зробити validate обов’язковим check.
 - [ ] Запустити validate з чистого checkout. У тимчасовому кластері перевірити merge → sync, reconcile після перерви зв’язку, self-heal після ручної зміни ConfigMap і збереження критичного PVC після вилучення маніфесту. Коміт `feat: bootstrap Argo CD and protect GitOps state`.
 
 ### 4. Підняти PostGIS і RustFS

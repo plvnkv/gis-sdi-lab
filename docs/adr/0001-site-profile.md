@@ -8,7 +8,7 @@
 | BMC, VLAN, PXE, власник DHCP, DNS і TLS | Commissioning, керування та ingress |
 | Протокол NAS, пропускна здатність, snapshots, retention | Запис та відновлення копій |
 | Початковий обсяг і приріст даних, RPO/RTO, строк заміни вузла | Розмір дисків, частота backup та приймання |
-| GitHub owner/repository, команда рев’юерів | Приватний репозиторій, CODEOWNERS, правила main |
+| GitHub owner/repository, команда рев’юерів | Публічний репозиторій, CODEOWNERS, правила main |
 
 ## Стартовий профіль для слабкого обладнання
 
@@ -22,6 +22,6 @@
 
 Початкові налаштування для профілю — один екземпляр кожного сервісу, один паралельний Celery worker slot, Prometheus із retention 7 днів і Loki monolithic із retention 3 дні. Для метрик і логів задати окремі дискові бюджети. RustFS single-node single-disk використовується для пілота з невеликими некритичними даними. Профіль перевіряється імпортом контрольного набору, паралельною видачею векторних і растрових тайлів та копіюванням на NAS. Перед робочим запуском перевірити OOM, тиск на диски, затримки та відновлення. Зафіксувати виміряні RPO/RTO.
 
-Цільовий приватний репозиторій GitHub — `plvnkv/gis-sdi-lab`. URL для Argo CD — `https://github.com/plvnkv/gis-sdi-lab.git`.
+Цільовий публічний репозиторій GitHub — `plvnkv/gis-sdi-lab`. URL для Argo CD — `https://github.com/plvnkv/gis-sdi-lab.git`.
 
 [Вимоги GeoNode](https://docs.geonode.org/projects/v4/en/5.0.x/start/quick/index.html), [вимоги k3s](https://docs.k3s.io/installation/requirements), [вимоги MAAS](https://canonical.com/maas/docs/latest/reference/configuration-guides/installation-requirements/), [режими RustFS](https://docs.rustfs.com/en/installation), [вимоги Martin](https://maplibre.org/martin/installation/)

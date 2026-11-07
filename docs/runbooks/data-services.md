@@ -1,0 +1,9 @@
+# PostGIS і RustFS
+
+Два одноекземплярні сервіси пілота використовують окремі PV з `gis-local` та внутрішні ClusterIP. Образи закріплені за digest. PostgreSQL 17 з PostGIS 3.6 розгортається без оператора. RustFS 1.0.4 працює в однодисковому режимі без консолі. [Docker PostGIS](https://github.com/postgis/docker-postgis), [RustFS 1.0.4](https://github.com/rustfs/rustfs/releases/tag/1.0.4)
+
+1. Після створення namespace та StorageClass підготувати PV для PVC `gis/postgis-data` (50 GiB) і `gis/rustfs-data` (100 GiB). Переконатися, що RustFS може писати під UID/GID 10001. Перевірити, що каталоги лежать на потрібному монтуванні. Див. [локальне сховище](storage.md).
+2. Імпортувати `gis/postgis-bootstrap` із ключем `password` та `gis/rustfs-bootstrap` з ключами `access-key` і `secret-key`. Підготувати непорожні випадкові значення і зберігати їх за процедурою [імпорту секретів](secrets.md).
+3. Явно синхронізувати Applications `gis-postgis` і `gis-rustfs` в Argo CD після підготовки дисків і Secrets. Дочекатися Bound для обох PVC і готовності Deployments. PostgreSQL ініціалізує БД `gis` із PostGIS та окрему БД `geonode` під час першого запуску з порожнім PGDATA.
+4. Перед запуском GeoNode та Martin створити окремі ролі PostgreSQL і надати лише потрібні привілеї. Перед запуском TiTiler створити бакет `rasters` і обліковий запис читання. Адміністративні облікові дані використовуються для bootstrap. Зміна bootstrap Secret PostgreSQL не змінює пароль на вже ініціалізованій БД.
+5. Для smoke-тесту підготувати виділений S3-бакет і тестові credentials з правами put/head/get/delete в його межах. Передати `GIS_CONTEXT`, `GIS_S3_ENDPOINT`, `GIS_S3_TEST_BUCKET` і credentials AWS CLI через оточення. За потреби відкрити локальний port-forward до `svc/rustfs`. Виконати `bash tests/gis/data.sh`. Окремо перевірити read-only роль Martin та відновлення з NAS перед робочим запуском.

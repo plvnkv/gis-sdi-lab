@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gis-postgis
+  namespace: argocd
+spec:
+  project: gis
+  source:
+    repoURL: https://github.com/plvnkv/gis-sdi-lab.git
+    targetRevision: main
+    path: apps/postgis
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gis
+  syncPolicy:
+    syncOptions:
+      - FailOnSharedResource=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gis-rustfs
+  namespace: argocd
+spec:
+  project: gis
+  source:
+    repoURL: https://github.com/plvnkv/gis-sdi-lab.git
+    targetRevision: main
+    path: apps/rustfs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gis
+  syncPolicy:
+    syncOptions:
+      - FailOnSharedResource=true

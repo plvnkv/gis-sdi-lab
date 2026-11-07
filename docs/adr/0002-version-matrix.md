@@ -15,3 +15,4 @@
 
 - PostgreSQL 17 / PostGIS 3.6 — `postgis/postgis:17-3.6`.
 - RustFS 1.0.4 — `rustfs/rustfs:1.0.4`.
+- Martin 1.16.1 — `ghcr.io/maplibre/martin:1.16.1`, digest зафіксовано для індексу з Linux amd64.

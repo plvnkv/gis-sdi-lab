@@ -28,3 +28,4 @@ bash tests/gitops/validate.sh clusters/prod
 - [Секрети майданчика](docs/runbooks/secrets.md)
 
 - [PostGIS і RustFS](docs/runbooks/data-services.md)
+- [Martin](docs/runbooks/martin.md)

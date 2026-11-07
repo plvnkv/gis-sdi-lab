@@ -29,15 +29,34 @@ STDIN.read.split(/^---\s*$/).each do |document|
   metadata = resource.fetch("metadata", {})
   label = "#{resource['kind']}/#{metadata['name']}"
   spec = resource.fetch("spec", {})
+  options = metadata.fetch("annotations", {}).fetch("argocd.argoproj.io/sync-options", "").split(",").map(&:strip)
+  protected_resource = %w[Prune=false Delete=false].all? { |option| options.include?(option) } &&
+    (options & %w[Prune=true Delete=true]).empty?
   case resource["kind"]
   when "Secret"
     errors << "#{label}: Secret is forbidden in public manifests"
   when "PersistentVolumeClaim"
-    options = metadata.fetch("annotations", {}).fetch("argocd.argoproj.io/sync-options", "").split(",").map(&:strip)
-    errors << "#{label}: PVC requires Prune=false and Delete=false" unless %w[Prune=false Delete=false].all? { |option| options.include?(option) }
+    errors << "#{label}: PVC requires Prune=false and Delete=false" unless protected_resource
+  when "StorageClass"
+    if metadata["name"] == "gis-local"
+      errors << "#{label}: gis-local StorageClass must retain volumes" unless resource["reclaimPolicy"] == "Retain"
+      errors << "#{label}: gis-local StorageClass must use static delayed binding" unless
+        resource["provisioner"] == "kubernetes.io/no-provisioner" && resource["volumeBindingMode"] == "WaitForFirstConsumer"
+      errors << "#{label}: gis-local StorageClass requires Prune=false and Delete=false" unless protected_resource
+    end
+  when "PersistentVolume"
+    if spec["storageClassName"] == "gis-local"
+      errors << "#{label}: gis-local PV requires Retain" unless spec["persistentVolumeReclaimPolicy"] == "Retain"
+      errors << "#{label}: gis-local PV requires Prune=false and Delete=false" unless protected_resource
+    end
   when "Application"
     root = metadata["name"] == "gis-root" && ARGV == ["--root"]
-    expected_project, expected_namespace = root ? %w[gis-bootstrap argocd] : %w[gis gis]
+    storage = metadata["name"] == "gis-storage"
+    expected_project = root ? "gis-bootstrap" : storage ? "gis-storage" : "gis"
+    expected_namespace = root ? "argocd" : "gis"
+    if storage && spec.dig("source", "path") != "platform/storage"
+      errors << "#{label}: storage Application requires platform/storage"
+    end
     destination = {"server" => server, "namespace" => expected_namespace}
     unless metadata["namespace"] == "argocd" && spec["project"] == expected_project && spec["destination"] == destination
       errors << "#{label}: Application outside GIS project or destination"

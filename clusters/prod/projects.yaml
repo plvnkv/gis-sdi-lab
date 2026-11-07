@@ -14,3 +14,23 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gis-storage
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  sourceRepos:
+    - https://github.com/plvnkv/gis-sdi-lab.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: gis
+  clusterResourceWhitelist:
+    - group: storage.k8s.io
+      kind: StorageClass
+  namespaceResourceBlacklist:
+    - group: "*"
+      kind: "*"

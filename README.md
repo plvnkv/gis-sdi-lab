@@ -23,3 +23,5 @@ bash tests/gitops/validate.sh clusters/prod
 ```
 
 Початкова Application Argo CD керує проєктом GIS. Інструкція встановлення є в [runbook](docs/runbooks/bootstrap.md).
+
+- [Локальне сховище GIS](docs/runbooks/storage.md)

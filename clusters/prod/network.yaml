@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gis-network
+  namespace: argocd
+spec:
+  project: gis
+  source:
+    repoURL: https://github.com/plvnkv/gis-sdi-lab.git
+    targetRevision: main
+    path: platform/ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gis
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - FailOnSharedResource=true

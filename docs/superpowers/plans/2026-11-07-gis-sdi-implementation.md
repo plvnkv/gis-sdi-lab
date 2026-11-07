@@ -63,10 +63,10 @@
 
 **Файли:** `bootstrap/argocd/install.sh`, `clusters/prod/root.yaml`, `clusters/prod/kustomization.yaml`, `clusters/prod/projects.yaml`, `platform/ingress/`, `platform/storage/`, `platform/secrets/`, `.github/workflows/validate.yaml`, `tests/gitops/validate.sh`.
 
-**Інтерфейси:** `bootstrap/argocd/install.sh --root clusters/prod/root.yaml` встановлює Argo, інтеграцію SOPS/age та root Application із публічним URL та окремим захищеним джерелом конфігурації майданчика й секретів. `bash tests/gitops/validate.sh clusters/prod` рендерить кожне джерело як Argo, перевіряє схеми з CRD, зафіксовані джерела та політику для критичних PVC.
+**Інтерфейси:** `bootstrap/argocd/install.sh --root clusters/prod/root.yaml` встановлює Argo та root Application із публічним URL та окремим захищеним джерелом конфігурації майданчика й секретів. `bash tests/gitops/validate.sh clusters/prod` рендерить кожне джерело як Argo, перевіряє схеми з CRD, зафіксовані джерела та політику для критичних PVC.
 
 - [ ] Додати негативні фікстури для plaintext Secret, образу з `latest`, неправильного namespace/AppProject і критичного PVC з дозволеним prune. Запустити validate до реалізації, потім вимагати відхилення кожної фікстури.
-- [ ] Додати root і AppProjects з обмеженими джерелами та призначеннями, єдиного власника ресурсів Argo, черговість CRD/контролерів, читання публічного GitHub URL без credentials, SOPS CMP і окремий шлях введення age-ключа. Додати TLS через ingress, мережеві політики, локальні PV з Retain і захист критичних PVC. У CI закріпити інструменти та actions, додати secret scanning і зробити validate обов’язковим check.
+- [ ] Додати root і AppProjects з обмеженими джерелами та призначеннями, єдиного власника ресурсів Argo, черговість CRD/контролерів, читання публічного GitHub URL без credentials, окремий імпорт SOPS/age в namespace gis без передавання ключа Argo CD. Додати TLS через ingress, мережеві політики, локальні PV з Retain і захист критичних PVC. У CI закріпити інструменти та actions, додати secret scanning і зробити validate обов’язковим check.
 - [ ] Запустити validate з чистого checkout. У тимчасовому кластері перевірити merge → sync, reconcile після перерви зв’язку, self-heal після ручної зміни ConfigMap і збереження критичного PVC після вилучення маніфесту. Коміт `feat: bootstrap Argo CD and protect GitOps state`.
 
 ### 4. Підняти PostGIS і RustFS

@@ -16,6 +16,8 @@ jobs:
         run: |
           bash tests/bootstrap/test-deploy.sh
           bash tests/bootstrap/test-k3s-install.sh
+      - name: Validate site secret import
+        run: bash tests/secrets/test-import.sh
       - name: Validate GitOps manifests
         run: |
           bash tests/gitops/test-policy.sh

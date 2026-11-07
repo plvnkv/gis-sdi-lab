@@ -23,4 +23,10 @@ metadata: {name: sample, namespace: argocd}
 spec: {project: default}'
 reject 'PVC requires Prune=false and Delete=false' 'kind: PersistentVolumeClaim
 metadata: {name: sample}'
+reject 'gis-local StorageClass must retain volumes' 'kind: StorageClass
+metadata: {name: gis-local}
+reclaimPolicy: Delete'
+reject 'gis-local PV requires Retain' 'kind: PersistentVolume
+metadata: {name: sample}
+spec: {storageClassName: gis-local, persistentVolumeReclaimPolicy: Delete}'
 echo 'PASS: GitOps policy fixtures'

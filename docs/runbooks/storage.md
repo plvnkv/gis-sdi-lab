@@ -1,0 +1,8 @@
+# Локальне сховище GIS
+
+Argo CD Application `gis-storage` створює StorageClass `gis-local`. Для цього класу адміністратор готує PV після інвентаризації дисків. `WaitForFirstConsumer` дозволяє планувальнику врахувати прив'язку тому до вузла. Для кожного PV явно встановлюється `Retain`. [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/), [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+
+1. Перевірити монтування за UUID через `findmnt`. Для PostGIS та RustFS підготувати окремі каталоги, перевірити власників і доступний простір. Якщо вони ділять одну файлову систему, capacity в PV не встановлює квоту. Потрібні окремі файлові системи, квоти або контроль споживання.
+2. Зробити копію [шаблону PV](../../platform/storage/examples/local-pv.yaml.example) у конфігурації майданчика. Підставити справжній шлях, label `kubernetes.io/hostname`, capacity і точний `claimRef`. Для RustFS створити окремий PV зі своєю назвою, шляхом і PVC.
+3. Перевірити `kubectl get storageclass gis-local`. Перевірити заповнений маніфест через `ruby tests/gitops/policy.rb < /path/to/volumes.local.yaml` і `kubectl apply --dry-run=server -f /path/to/volumes.local.yaml`. Застосувати PV до запуску залежних застосунків. PVC має явно використовувати `gis-local` і мати анотації `Prune=false,Delete=false`.
+4. Після створення Pod перевірити `kubectl -n gis get pvc` та `kubectl get pv`. Обидва ресурси мають бути `Bound` до очікуваної пари. Якщо видалення PVC залишило PV у `Released`, звірити дані, копію та старий claim UID перед повторним прив'язуванням. На заміненому вузлі спочатку відновити дані й лише потім підключити залежні Pod-и.

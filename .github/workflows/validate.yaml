@@ -21,3 +21,4 @@ jobs:
           bash tests/gitops/test-policy.sh
           bash tests/gitops/test-network.sh
           bash tests/gitops/validate.sh clusters/prod
+          ruby tests/gitops/policy.rb < platform/storage/examples/local-pv.yaml.example

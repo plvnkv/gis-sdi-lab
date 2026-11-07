@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.superpowers/
+.worktrees/
+*.local.json
+*.local.yaml
+*.agekey
+kubeconfig

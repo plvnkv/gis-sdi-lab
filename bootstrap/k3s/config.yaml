@@ -1,0 +1,3 @@
+cluster-init: true
+secrets-encryption: true
+write-kubeconfig-mode: "0600"

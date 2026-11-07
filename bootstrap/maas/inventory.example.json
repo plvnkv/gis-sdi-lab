@@ -1,0 +1,6 @@
+{
+  "profile": "gis",
+  "system_id": "example",
+  "disk_serials": ["REPLACE-WITH-COMMISSIONED-SERIAL"],
+  "distro_series": "noble"
+}

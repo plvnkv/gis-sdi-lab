@@ -1,0 +1,3 @@
+#cloud-config
+ssh_pwauth: false
+disable_root: true
